@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- TODO change -->
+    <link rel="stylesheet" href="css/libs.min.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app" class="container">
+        <div class="header">
+            <p>Редактирование зоны магазина Ашан</p>
+        </div>
+        <div class="row">
+            <div class="map">
+                <canvas id="mapAuchan" v-on:mousedown="buttonMouseDown" v-on:mouseup="buttonMouseUp" v-on:mousemove="mouseMoveAndDraw"></canvas>
+            </div>
+            <div class="menu">
+                <div class="title">
+                    <p class=menu_title>Зоны магазина АШАН</p>
+                </div>
+                <div class="list">
+
+
+                    <div v-for="(item, index) in listWithCoordinates" class="zone">
+                        <input type="radio" v-bind:id="item.id" name="group_of_zone" v-bind:value="item" v-model="selectedWithCoordinates" />
+                        <label class="zone_label" v-bind:for="item.id">
+                            <div class="zone_name">
+                                <p>{{item.name}}</p>
+                            </div>
+                            <div class="zone_values">
+                                <div class="zone_coordinate">
+                                    <p>x1: {{item.coordinates.x1}}, y1: {{item.coordinates.y1}}</p>
+                                    <p>x1: {{item.coordinates.x2}}, y2: {{item.coordinates.y2}}</p>
+                                </div>
+                            </div>
+
+                            <div class="zone_del">
+                                <button class="btn waves-effect waves-light" v-on:click=removeExistZone(item)>
+                                    <i class="material-icons">&#10006;</i>
+                                </button>
+                            </div>
+                        </label>
+                    </div>
+
+
+                </div>
+                <div class="send_form">
+                    <!-- TODO change -->
+                    <form action="http://127.0.0.1:8001/zone/api/v1/zones/" method="POST">
+                        <input type="hidden" name="data" v-bind:value="jsonData">
+                        <button class="btn waves-effect waves-light" type="submit" name="action">
+                            СОХРАНИТЬ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Structure -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <h4>Выбрать зону</h4>
+                <div class="row_modal">
+
+                    <div class="zone_column">
+                        <p>Список зон без координат</p>
+
+                        <select class="browser-default" v-model="selectedWithOutCoordinates">
+                            <!-- <option disabled selected value>Выберите зону без координат:</option> -->
+                            <option v-for="item in listWithOutCoordinates" v-bind:value="item">
+                                {{item.name}}
+                            </option>
+                        </select>
+
+                    </div>
+
+                    <div class="zone_coordinates">
+                        <p>Выбранные соординаты:</p>
+                        <p>x1: {{drawedZone.x1}}px</p>
+                        <p>y1: {{drawedZone.y1}}px</p>
+                        <p>x2: {{drawedZone.x2}}px</p>
+                        <p>y2: {{drawedZone.y2}}px</p>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-close waves-effect waves-red btn-flat" v-on:click="addZoneCoordinates()">Подтвердить</a>
+            </div>
+        </div>
+
+    </div>
+    <!-- TODO change -->
+    <script src="js/libs.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

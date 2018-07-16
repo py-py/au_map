@@ -1,0 +1,120 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f8f8f8; }
+
+.container {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  margin: 0;
+  width: 100%;
+  max-width: none; }
+  .container .header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 56px; }
+    .container .header p {
+      margin: 0px;
+      color: #333333;
+      font-size: 20px; }
+  .container .row {
+    display: flex;
+    justify-content: center; }
+    .container .row .map {
+      margin: 12px 5px 0 10px; }
+      .container .row .map canvas {
+        border-radius: 14px; }
+      .container .row .map .default_img {
+        display: none;
+        width: 100%;
+        height: 100%; }
+    .container .row .menu {
+      background-color: #fff;
+      width: 380px;
+      border-radius: 14px;
+      margin: 12px 5px 0 10px; }
+      .container .row .menu .title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 56px; }
+        .container .row .menu .title p {
+          margin: 0px;
+          color: #333333;
+          font-size: 16px; }
+      .container .row .menu .list .zone {
+        display: flex;
+        flex-grow: 1;
+        height: 48px;
+        border-bottom: #f8f8f8 solid 1px; }
+        .container .row .menu .list .zone input[type=radio] {
+          display: none; }
+          .container .row .menu .list .zone input[type=radio]:checked + .zone_label {
+            background-color: #fafafa; }
+        .container .row .menu .list .zone .zone_label {
+          display: flex;
+          justify-content: space-between;
+          width: 100%; }
+          .container .row .menu .list .zone .zone_label .zone_name {
+            display: flex;
+            width: 193px;
+            padding-left: 5px;
+            padding-right: 3px;
+            color: #4e4e4e;
+            align-items: center; }
+          .container .row .menu .list .zone .zone_label .zone_values {
+            display: flex;
+            align-items: center;
+            width: 108px;
+            padding-left: 3px;
+            padding-right: 3px; }
+            .container .row .menu .list .zone .zone_label .zone_values .zone_coordinate p {
+              margin: 4px 0;
+              margin-right: -5px; }
+              .container .row .menu .list .zone .zone_label .zone_values .zone_coordinate p.no_coordinates {
+                font-weight: bold; }
+          .container .row .menu .list .zone .zone_label .zone_del {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-left: 3px;
+            padding-right: 10px; }
+            .container .row .menu .list .zone .zone_label .zone_del .btn {
+              display: block;
+              padding: 0 10px;
+              height: 30px;
+              line-height: 12px;
+              background-color: #47bac1; }
+              .container .row .menu .list .zone .zone_label .zone_del .btn i {
+                font-size: 12px;
+                font-style: normal; }
+    .container .row .send_form {
+      margin-top: 14px;
+      text-align: center; }
+      .container .row .send_form .btn {
+        background-color: #47bac1; }
+  .container .modal .modal-content {
+    height: 400px; }
+    .container .modal .modal-content h4 {
+      color: #333333;
+      text-align: center; }
+    .container .modal .modal-content .row_modal {
+      display: flex; }
+      .container .modal .modal-content .row_modal .zone_column {
+        width: 70%;
+        padding-right: 18px; }
+        .container .modal .modal-content .row_modal .zone_column p {
+          color: #9e9e9e; }
+        .container .modal .modal-content .row_modal .zone_column .select-wrapper input.select-dropdown:focus {
+          border-bottom: 1px solid #333333; }
+        .container .modal .modal-content .row_modal .zone_column .dropdown-content li > a li:first-child > span,
+        .container .modal .modal-content .row_modal .zone_column .dropdown-content li:first-child > span {
+          color: rgba(0, 0, 0, 0.3);
+          background-color: transparent; }
+        .container .modal .modal-content .row_modal .zone_column .dropdown-content li > a li > span,
+        .container .modal .modal-content .row_modal .zone_column .dropdown-content li > span {
+          color: #333333; }
+      .container .modal .modal-content .row_modal .zone_coordinates p {
+        color: #9e9e9e; }
