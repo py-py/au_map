@@ -1,3 +1,10 @@
+# Mine
+.vscode/
+dist/
+package-lock.json
+
+
+
 # Logs
 logs
 *.log
