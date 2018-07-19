@@ -848,191 +848,233 @@ var data = [{
 
 let hasCoordinates = function (obj) {
   let objHasCoordinates = true,
-    coordinates = [
-      obj.coordinates.x1,
-      obj.coordinates.x2,
-      obj.coordinates.y1,
-      obj.coordinates.y2
-    ];
+      coordinates = [
+          obj.coordinates.x1,
+          obj.coordinates.x2,
+          obj.coordinates.y1,
+          obj.coordinates.y2
+      ];
 
   for (let item of coordinates) {
-    if (item == null) objHasCoordinates = false;
+      if (item == null) objHasCoordinates = false;
   }
 
   return objHasCoordinates;
-}
+};
+
 
 var app = new Vue({
   el: '#app',
-
+  delimiters: ["<%","%>"],
 
   data: {
-    // TODO: change;
-    zones: data,
-    store_id: 7,
-    // TODO: change;
-    map: 'http://localhost:3000/img/Bilychi_2018-fin.jpg',
+      zones: [],
+      store: null,
+      scheme: null,
+      minSize: null,
+      alertMessage: null,
 
-    selectedWithCoordinates: null,
-    selectedWithOutCoordinates: null,
-    drawedZone: {
-      x1: null,
-      y1: null,
-      x2: null,
-      y2: null
-    },
+      listWith: [],
+      listWithOut:[],
+      selectedZone: null,
 
-    canvasElement: null,
-    imageElement: null,
-    context: null,
+      drawedZone: {
+          x1: null,
+          y1: null,
+          x2: null,
+          y2: null
+      },
+
+      canvasElement: null,
+      imageElement: null,
+      context: null,
+
+      jsonData: undefined,
   },
-
 
   methods: {
-    // EVENTS
-    buttonMouseDown: function (event) {
-      this.drawedZone.x1 = event.offsetX;
-      this.drawedZone.y1 = event.offsetY;
-    },
-    buttonMouseUp: function (event) {
-      this.drawedZone.x2 = event.offsetX;
-      this.drawedZone.y2 = event.offsetY;
-      this.openModalWindow();
-    },
-    mouseMoveAndDraw: function (event) {
-      if (this.drawedZone.x1 && this.drawedZone.y1) {
+      // EVENTS
+      buttonMouseDown: function (event) {
+          this.drawedZone.x1 = event.offsetX;
+          this.drawedZone.y1 = event.offsetY;
+      },
+      buttonMouseUp: function (event) {
+          let isSatisfiedSizeRectangle = function (zone) {
+              let w = Math.abs(zone.x2 - zone.x1);
+              let h = Math.abs(zone.y2 - zone.y1);
+              if (w > app.minSize && h > app.minSize) {
+                  return true;
+              }
+              return false;
+          };
 
-        // this.clearCanvas();
-        this.drawAllObjectsWithCoordinates();
+          this.drawedZone.x2 = event.offsetX;
+          this.drawedZone.y2 = event.offsetY;
 
-        const rect = new Facade.Rect({
-          x: this.drawedZone.x1,
-          y: this.drawedZone.y1,
-          width: event.offsetX - this.drawedZone.x1,
-          height: event.offsetY - this.drawedZone.y1,
-          lineWidth: 1,
-          strokeStyle: '#333E4B',
-          fillStyle: '#e0001a',
-          anchor: 'left',
-          opacity: 20,
-        });
+          if (isSatisfiedSizeRectangle(this.drawedZone)){
+              this.openModalWindow();
+          }
+          else {
+              alert(this.alertMessage + " " + this.minSize + " px.");
+              this.clearDrawedZone();
+              this.cleanCanvasAndDrawAllObjectsWithCoordinates();
+          }
+      },
+      mouseMoveAndDraw: function (event) {
+          if (this.drawedZone.x1 && this.drawedZone.y1) {
+              this.cleanCanvasAndDrawAllObjectsWithCoordinates();
 
-        this.canvasElement.addToStage(rect);
-      }
-    },
-    // ADDITIONAL METHODS FOR EVENTS;
-    openModalWindow: function () {
-      this.modalElement.open();
-    },
-    removeExistZone: function (obj) {
-      obj.coordinates.x1 = null;
-      obj.coordinates.y1 = null;
-      obj.coordinates.x2 = null;
-      obj.coordinates.y2 = null;
-      // obj.has_coordinates = hasCoordinates(obj);
-      obj.is_updated = true;
-    },
-    addZoneCoordinates: function () {
-      this.selectedWithOutCoordinates.coordinates.x1 = this.drawedZone.x1;
-      this.selectedWithOutCoordinates.coordinates.y1 = this.drawedZone.y1;
-      this.selectedWithOutCoordinates.coordinates.x2 = this.drawedZone.x2;
-      this.selectedWithOutCoordinates.coordinates.y2 = this.drawedZone.y2;
-      // this.selectedWithOutCoordinates.has_coordinates = hasCoordinates(this.selectedWithOutCoordinates);
-      this.selectedWithOutCoordinates.is_updated = true;
+              const rect = new Facade.Rect({
+                  x: this.drawedZone.x1,
+                  y: this.drawedZone.y1,
+                  width: event.offsetX - this.drawedZone.x1,
+                  height: event.offsetY - this.drawedZone.y1,
+                  lineWidth: 1,
+                  strokeStyle: '#333E4B',
+                  fillStyle: '#e0001a',
+                  anchor: 'left',
+                  opacity: 20,
+              });
 
-      this.clearDrawedZone();
-    },
-    // HELPFUL METHODS;
-    clearDrawedZone: function () {
-      this.drawedZone.x1 = null;
-      this.drawedZone.y1 = null;
-      this.drawedZone.x2 = null;
-      this.drawedZone.y2 = null;
-    },
-    clearCanvas: function () {
-      this.context.drawImage(this.imageElement, 0, 0);
-    },
-    drawAllObjectsWithCoordinates: function () {
-      this.clearCanvas();
-      for (let item of this.listWithCoordinates) {
-        this.drawMe(item);
-      }
-    },
-    drawMe: function (obj) {
-      const rect = new Facade.Rect({
-        x: obj.coordinates.x1,
-        y: obj.coordinates.y1,
-        width: obj.coordinates.x2 - obj.coordinates.x1,
-        height: obj.coordinates.y2 - obj.coordinates.y1,
-        lineWidth: 1,
-        fillStyle: '#1C73A8',
-        anchor: 'left',
-        opacity: 20,
-      });
+              this.canvasElement.addToStage(rect);
+          }
+      },
 
-      this.canvasElement.addToStage(rect);
-    },
-    onModalClose: function () {
-      this.clearDrawedZone();
-      // this.clearCanvas();
-    },
+      // ADDITIONAL METHODS FOR EVENTS;
+      openModalWindow: function () {
+          //remove select2 select in modal windows;
+          let select2Element = document.getElementsByClassName('select2-container');
+          if (select2Element.length) select2Element[0].remove();
+
+          //remove style for materialize select;
+          let selectElement = document.getElementById('idSelectElement');
+          selectElement.classList.remove('select2-hidden-accessible');
+
+          this.modalElement.open();
+      },
+      removeZone: function (obj) {
+          obj.coordinates.x1 = null;
+          obj.coordinates.y1 = null;
+          obj.coordinates.x2 = null;
+          obj.coordinates.y2 = null;
+          obj.is_updated = true;
+
+          //UPDATE LIST OF ELEMENTS;
+          this.updateLists();
+      },
+      addZone: function () {
+          this.selectedZone.coordinates.x1 = this.drawedZone.x1;
+          this.selectedZone.coordinates.y1 = this.drawedZone.y1;
+          this.selectedZone.coordinates.x2 = this.drawedZone.x2;
+          this.selectedZone.coordinates.y2 = this.drawedZone.y2;
+          this.selectedZone.is_updated = true;
+
+          //CLEAN DRAWED ZONE;
+          this.clearDrawedZone();
+          //UPDATE LIST OF ELEMENTS;
+          this.updateLists();
+      },
+
+      // HELPFUL METHODS;
+      updateLists: function () {
+          this.listWith = this.zones.filter(zone => hasCoordinates(zone));
+          this.listWithOut = this.zones.filter(zone => !hasCoordinates(zone));
+      },
+      clearDrawedZone: function () {
+          this.drawedZone.x1 = null;
+          this.drawedZone.y1 = null;
+          this.drawedZone.x2 = null;
+          this.drawedZone.y2 = null;
+      },
+      cleanCanvasAndDrawAllObjectsWithCoordinates: function () {
+          // CLEAN CANVAS;
+          this.context.drawImage(this.imageElement, 0, 0);
+          // DRAW RECTANGLES;
+          for (let item of this.listWith) {
+              this.drawZone(item);
+          }
+      },
+      drawZone: function (obj) {
+          const rect = new Facade.Rect({
+              x: obj.coordinates.x1,
+              y: obj.coordinates.y1,
+              width: obj.coordinates.x2 - obj.coordinates.x1,
+              height: obj.coordinates.y2 - obj.coordinates.y1,
+              lineWidth: 1,
+              fillStyle: '#1C73A8',
+              anchor: 'left',
+              opacity: 20,
+          });
+
+          this.canvasElement.addToStage(rect);
+      },
+      onModalClose: function () {
+          this.clearDrawedZone();
+          this.cleanCanvasAndDrawAllObjectsWithCoordinates();
+      },
+
+      // UPDATED this.jsonData, WHICH WILL BE SENT TO BACKEND;
+      getData: function () {
+          return JSON.stringify({
+              'store': this.store,
+              'zones': this.zones.filter(zone => zone.is_updated)
+          })
+      },
   },
 
-
   computed: {
-    listWithCoordinates: function () {
-      return this.zones.filter(zone => hasCoordinates(zone));
-    },
-    listWithOutCoordinates: function () {
-      return this.zones.filter(zone => !hasCoordinates(zone));
-    },
-    modalElement: function () {
-      let modal = document.getElementById('modal');
-      return M.Modal.getInstance(modal);
-    },
-    //FORM DATA;
-    jsonData: function () {
-      return JSON.stringify({
-        'store_id': this.store_id,
-        'zones': this.zones
-      })
-    }
+      modalElement: function () {
+          let modal = document.getElementById('modal');
+          return M.Modal.getInstance(modal);
+      },
   },
 
   watch: {
-    listWithCoordinates: function () {
-      this.drawAllObjectsWithCoordinates();
-    }
+      listWith: function () {
+          this.cleanCanvasAndDrawAllObjectsWithCoordinates();
+          this.jsonData = this.getData();
+      }
+  },
+
+  created() {
+      this.store = store;
+      this.scheme = scheme;
+      this.zones = data;
+      this.minSize = min_size;
+      this.alertMessage = alert_message;
+
+      this.listWith = this.zones.filter(zone => hasCoordinates(zone));
+      this.listWithOut = this.zones.filter(zone => !hasCoordinates(zone));
   },
 
   mounted() {
-    // CANVAS INIT
-    var img = new Image();
-    img.onload = function () {
-      var canvas = document.getElementById("mapAuchan");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      var context = canvas.getContext("2d");
-      context.drawImage(img, 0, 0);
+      // CANVAS INIT
+      var img = new Image();
+      img.onload = function () {
+          var canvas = document.getElementById("mapAuchan");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          var context = canvas.getContext("2d");
+          context.drawImage(img, 0, 0);
 
-      app.drawAllObjectsWithCoordinates();
-    }
-    img.src = this.map; 
-    
+          app.cleanCanvasAndDrawAllObjectsWithCoordinates();
+      };
+      img.src = this.scheme;
 
-    this.canvasElement = new Facade(document.querySelector('canvas'));
-    this.imageElement = img;
-    this.context = document.getElementById("mapAuchan").getContext('2d');
-       
 
-    // MODAL MATERIALIZE INIT
-    var modalElements = document.querySelectorAll('.modal');
-    M.Modal.init(modalElements, {
-      onCloseStart: this.onModalClose
-    });
+      this.canvasElement = new Facade(document.querySelector('canvas'));
+      this.imageElement = img;
+      this.context = document.getElementById("mapAuchan").getContext('2d');
 
-    // SELECT MATERIALIZE INIT
-    var selectElements = document.querySelectorAll('select');
-    M.FormSelect.init(selectElements, {});
+
+      // MODAL MATERIALIZE INIT
+      var modalElements = document.querySelectorAll('.modal');
+      M.Modal.init(modalElements, {
+          onCloseStart: this.onModalClose
+      });
+
+      // SELECT MATERIALIZE INIT
+      var selectElements = document.querySelectorAll('select');
+      M.FormSelect.init(selectElements, {});
   }
-})
+});

@@ -1,9 +1,7 @@
 # Mine
-.vscode/
-dist/
+.vscode
+dist
 package-lock.json
-
-
 
 # Logs
 logs

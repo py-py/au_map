@@ -15,7 +15,7 @@
 <body>
     <div id="app" class="container">
         <div class="header">
-            <p>Редактирование зоны магазина Ашан</p>
+            <p>Редактирование зоны магазина <% store %></p>
         </div>
         <div class="row">
             <div class="map">
@@ -23,26 +23,26 @@
             </div>
             <div class="menu">
                 <div class="title">
-                    <p class=menu_title>Зоны магазина АШАН</p>
+                    <p class=menu_title>Зоны магазина <% store %></p>
                 </div>
                 <div class="list">
 
 
-                    <div v-for="(item, index) in listWithCoordinates" class="zone">
-                        <input type="radio" v-bind:id="item.id" name="group_of_zone" v-bind:value="item" v-model="selectedWithCoordinates" />
+                    <div v-for="item in listWith" class="zone">
+                        <input type="radio" v-bind:id="item.id" name="group_of_zone" />
                         <label class="zone_label" v-bind:for="item.id">
                             <div class="zone_name">
-                                <p>{{item.name}}</p>
+                                <p><%item.name%></p>
                             </div>
                             <div class="zone_values">
                                 <div class="zone_coordinate">
-                                    <p>x1: {{item.coordinates.x1}}, y1: {{item.coordinates.y1}}</p>
-                                    <p>x1: {{item.coordinates.x2}}, y2: {{item.coordinates.y2}}</p>
+                                    <p>x1: <%item.coordinates.x1%>, y1: <%item.coordinates.y1%></p>
+                                    <p>x2: <%item.coordinates.x2%>, y2: <%item.coordinates.y2%></p>
                                 </div>
                             </div>
 
                             <div class="zone_del">
-                                <button class="btn waves-effect waves-light" v-on:click=removeExistZone(item)>
+                                <button class="btn waves-effect waves-light" v-on:click=removeZone(item)>
                                     <i class="material-icons">&#10006;</i>
                                 </button>
                             </div>
@@ -52,8 +52,7 @@
 
                 </div>
                 <div class="send_form">
-                    <!-- TODO change -->
-                    <form action="http://127.0.0.1:8001/zone/api/v1/zones/" method="POST">
+                    <form action="<% url %>" method="POST">
                         <input type="hidden" name="data" v-bind:value="jsonData">
                         <button class="btn waves-effect waves-light" type="submit" name="action">
                             СОХРАНИТЬ
@@ -72,33 +71,40 @@
                     <div class="zone_column">
                         <p>Список зон без координат</p>
 
-                        <select class="browser-default" v-model="selectedWithOutCoordinates">
-                            <!-- <option disabled selected value>Выберите зону без координат:</option> -->
-                            <option v-for="item in listWithOutCoordinates" v-bind:value="item">
-                                {{item.name}}
+                        <select id="idSelectElement" class="browser-default" v-model="selectedZone">
+                            <option v-for="item in listWithOut" v-bind:value="item">
+                                <%item.name%>
                             </option>
                         </select>
-
                     </div>
 
                     <div class="zone_coordinates">
                         <p>Выбранные соординаты:</p>
-                        <p>x1: {{drawedZone.x1}}px</p>
-                        <p>y1: {{drawedZone.y1}}px</p>
-                        <p>x2: {{drawedZone.x2}}px</p>
-                        <p>y2: {{drawedZone.y2}}px</p>
+                        <p>x1: <%drawedZone.x1%>px</p>
+                        <p>y1: <%drawedZone.y1%>px</p>
+                        <p>x2: <%drawedZone.x2%>px</p>
+                        <p>y2: <%drawedZone.y2%>px</p>
                     </div>
 
                 </div>
 
             </div>
             <div class="modal-footer">
-                <a href="#!" class="modal-close waves-effect waves-red btn-flat" v-on:click="addZoneCoordinates()">Подтвердить</a>
+                <a class="modal-close" v-on:click="addZone()">
+                    <button class="btn effect">Подтвердить</button>
+                </a>
             </div>
         </div>
-
     </div>
-    <!-- TODO change -->
+     <!-- TODO change -->
+    <script>
+        var data = data;
+        var store = 'Магазин № 1';
+        var scheme = 'img/Bilychi_2018-fin.jpg';
+        var min_size = 10;
+        var alert_message = 'Минимальный размер выделенной зоны по высоте и ширине не может быть менee';
+
+    </script>
     <script src="js/libs.min.js"></script>
     <script src="js/main.js"></script>
 </body>
