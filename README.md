@@ -1,7 +1,7 @@
 # au_map
 
-git clone https://github.com/py-py/au_map.git <br />
-cd au_map <br />
-npm install -d <br />
-gulp default <br />
+Download project: git clone https://github.com/py-py/au_map.git <br />
+Change directorey: cd au_map <br />
+Install all dependecy: npm install -d <br />
+Run project: gulp default <br />
 
